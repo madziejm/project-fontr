@@ -22,6 +22,7 @@ pytest = ">=7.2,<8.0"
 scikit-learn = ">=1.0,<2.0"
 kedro-sagemaker = "^0.3.0"
 kedro-mlflow = "^0.11.8"
+pre-commit = "^3.2.1"
 
 [build-system]
 requires = ["poetry-core"]
