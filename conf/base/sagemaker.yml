@@ -1,0 +1,27 @@
+aws:
+  # Bucket name to use as a temporary storage within the pipeline job
+  bucket: "sagemaker-eu-central-1-830437619288-fontr-kedro-pipeline"
+
+  # AWS SageMaker Executor role ARN
+  execution_role: "arn:aws:iam::830437619288:role/service-role/AmazonSageMaker-ExecutionRole-20230228T102923"
+
+  # use Kedro node tags (recommended) or node names to assign compute resources
+  # use __default__ to specify the default values (for all nodes)
+  resources:
+    __default__:
+      instance_count: 1
+      instance_type: ml.m5.large
+      timeout_seconds: 86400
+      security_group_ids: null
+      subnets: null
+  sagemaker:
+    # (optional) mapping between kedro pipeline names (keys) and SageMaker pipeline names
+    # Note that SageMaker does not support underscores in pipeline names.
+    # Here you can map for example add `__default__: "my-pipeline"`
+    # to make the `__default__` Kedro pipeline appear as `my-pipeline` in SageMaker UI
+    pipeline_names_mapping:
+      data_processing: "fontr-data-processing"
+      data_science: "fontr-data-science"
+docker:
+  image: "830437619288.dkr.ecr.eu-central-1.amazonaws.com/fontr"
+  working_directory: /home/kedro
