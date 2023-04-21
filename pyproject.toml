@@ -23,6 +23,9 @@ scikit-learn = ">=1.0,<2.0"
 kedro-sagemaker = "^0.3.0"
 kedro-mlflow = "^0.11.8"
 pre-commit = "^3.2.1"
+pytorch-lightning = "^2.0.1.post0"
+torch = "^2.0.0"
+torchvision = "^0.15.1"
 
 [build-system]
 requires = ["poetry-core"]
