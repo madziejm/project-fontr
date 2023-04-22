@@ -6,4 +6,4 @@ repos:
     hooks:
     - id: poetry-export
       args: ["-f", "requirements.txt", "-o", "src/requirements.txt"]
-
+      args: ["-f", "requirements.txt", "-o", "src/requirements-test-only.txt", "--only=test"]
