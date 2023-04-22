@@ -1,0 +1,18 @@
+name: mypy
+
+on: [push, pull_request]
+jobs:
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Branch checkout
+        uses: actions/checkout@v3
+      - name: Python setup
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Mypy installation
+        run: pip install -r src/requirements-test-only.txt
+        run: pip install -r src/requirements.txt
+      - name: Sources linting
+        run: mypy --check src
