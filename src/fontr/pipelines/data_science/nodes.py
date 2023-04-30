@@ -1,9 +1,10 @@
+"""todo nuke this file
+"""
+
 import logging
 from typing import Dict, Tuple
 
-import pandas as pd
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
+# from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
 
 
@@ -24,7 +25,7 @@ def split_data(data: pd.DataFrame, parameters: Dict) -> Tuple:
     return X_train, X_test, y_train, y_test
 
 
-def train_model(X_train: pd.DataFrame, y_train: pd.Series) -> LinearRegression:
+def train_model(X_train, y_train) -> LinearRegression:
     """Trains the linear regression model.
 
     Args:
@@ -34,22 +35,20 @@ def train_model(X_train: pd.DataFrame, y_train: pd.Series) -> LinearRegression:
     Returns:
         Trained model.
     """
-    regressor = LinearRegression()
-    regressor.fit(X_train, y_train)
-    return regressor
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+    return model
 
 
-def evaluate_model(
-    regressor: LinearRegression, X_test: pd.DataFrame, y_test: pd.Series
-):
+def evaluate_model(model, X_test, y_test):
     """Calculates and logs the coefficient of determination.
 
     Args:
-        regressor: Trained model.
+        model: Trained model.
         X_test: Testing data of independent features.
         y_test: Testing data for price.
     """
-    y_pred = regressor.predict(X_test)
-    score = r2_score(y_test, y_pred)
-    logger = logging.getLogger(__name__)
-    logger.info("Model has a coefficient R^2 of %.3f on test data.", score)
+    # y_pred = model.predict(X_test)
+    # score = r2_score(y_test, y_pred)
+    # logger = logging.getLogger(__name__)
+    # logger.info("Model has a coefficient R^2 of %.3f on test data.", score)
