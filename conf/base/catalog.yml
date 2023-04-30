@@ -7,49 +7,48 @@
 #
 # An example data set definition can look as follows:
 #
-#bikes:
-#  type: pandas.CSVDataSet
-#  filepath: "data/01_raw/bikes.csv"
-#
-#weather:
-#  type: spark.SparkDataSet
-#  filepath: s3a://your_bucket/data/01_raw/weather*
-#  file_format: csv
-#  credentials: dev_s3
-#  load_args:
-#    header: True
-#    inferSchema: True
-#  save_args:
-#    sep: '|'
-#    header: True
-#
-#scooters:
-#  type: pandas.SQLTableDataSet
-#  credentials: scooters_credentials
-#  table_name: scooters
-#  load_args:
-#    index_col: ['name']
-#    columns: ['name', 'gear']
-#  save_args:
-#    if_exists: 'replace'
-#    # if_exists: 'fail'
-#    # if_exists: 'append'
-#
 # The Data Catalog supports being able to reference the same file using two different DataSet implementations
 # (transcoding), templating and a way to reuse arguments that are frequently repeated. See more here:
 # https://kedro.readthedocs.io/en/stable/data/data_catalog.html
 
-companies:
-  type: pandas.CSVDataSet
-  filepath: data/01_raw/companies.csv
-  layer: raw
+# todo
+# unlabeled_imgs:
+#   type: PartitionedDataSet
+#   filepath: s3://sagemaker-eu-central-1-830437619288-datasets/scrape-wtf-new/
+#   filename_suffix: ".png"
+#   layer: raw
 
-reviews:
-  type: pandas.CSVDataSet
-  filepath: data/01_raw/reviews.csv
-  layer: raw
+# todo
+# labeled_imgs:
+#   type: PartitionedDataSet
+#   filename_suffix: ".png"
+#   filepath: 's3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset/AdobeVFR_release/Raw Image/VFR_real_test/''
 
-shuttles:
-  type: pandas.ExcelDataSet
-  filepath: data/01_raw/shuttles.xlsx
-  layer: raw
+# todo
+# labels:
+
+# todo
+# fontlist:
+#   type: kedro.extras.datasets.json.TextDataSet
+#   filepath: s3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset/AdobeVFR_release/fontlist.txt
+
+# todo
+# Autoencoder:
+#   type: pickle.todo
+#   filepath:
+#   versioned: true
+
+
+# todo
+# ClassificationModel:
+#   type: pickle.todo
+#   filepath:
+#   versioned: true
+
+# todo
+train_images_list:
+  type: PartitionedDataSet
+  path: /home/maciej/Pobrane
+  dataset: fontr.datasets.FileWithDirAsLabel
+  filename_fuffix: ".jpg"
+
