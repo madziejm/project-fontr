@@ -46,9 +46,13 @@
 #   versioned: true
 
 # todo
-train_images_list:
-  type: PartitionedDataSet
-  path: /home/maciej/Pobrane
-  dataset: fontr.datasets.FileWithDirAsLabel
-  filename_fuffix: ".jpg"
+# train_images_list:
+#   type: PartitionedDataSet
+#   path: /home/maciej/Pobrane
+#   dataset: fontr.datasets.FileWithDirAsLabel
+#   filename_fuffix: ".jpg"
 
+syn_train_bcf:
+  type: fontr.datasets.GoogleDriveDataset
+  filepath: gdrive://drive.google.com/drive/folders/1h2xyJVk1oVuetH4G5wZQRfwH9iSCUG0U
+  file_name: vfr_large.bcf
