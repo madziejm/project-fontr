@@ -21,6 +21,7 @@ pre-commit = "^3.2.1"
 pytorch-lightning = "^2.0.1.post0"
 torch = "^2.0.0"
 torchvision = "^0.15.1"
+gdrivefs = {git = "https://github.com/fsspec/gdrivefs.git"}
 
 [tool.poetry.group.test.dependencies]
 pytest-cov = ">=4.0,<5.0"
