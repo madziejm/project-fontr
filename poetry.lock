@@ -2143,6 +2143,21 @@ files = [
 ]
 
 [[package]]
+name = "lxml-stubs"
+version = "0.4.0"
+description = "Type annotations for the lxml package"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "lxml-stubs-0.4.0.tar.gz", hash = "sha256:184877b42127256abc2b932ba8bd0ab5ea80bd0b0fee618d16daa40e0b71abee"},
+    {file = "lxml_stubs-0.4.0-py3-none-any.whl", hash = "sha256:3b381e9e82397c64ea3cc4d6f79d1255d015f7b114806d4826218805c10ec003"},
+]
+
+[package.extras]
+test = ["coverage[toml] (==5.2)", "pytest (>=6.0.0)", "pytest-mypy-plugins (==1.9.3)"]
+
+[[package]]
 name = "mako"
 version = "1.2.4"
 description = "A super-fast templating language that borrows the best ideas from the existing templating languages."
@@ -2970,6 +2985,21 @@ pytz = ">=2020.1"
 
 [package.extras]
 test = ["hypothesis (>=5.5.3)", "pytest (>=6.0)", "pytest-xdist (>=1.31)"]
+
+[[package]]
+name = "pandas-stubs"
+version = "2.0.1.230501"
+description = "Type annotations for pandas"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pandas_stubs-2.0.1.230501-py3-none-any.whl", hash = "sha256:7ffc6528290df44881d1d78b7239161ba203e4b6570b71949fc4a4e5eabca8a5"},
+    {file = "pandas_stubs-2.0.1.230501.tar.gz", hash = "sha256:2faf2c08ecfd8f5b82823279e06818d92eb642079e73d93921779bad69bd4cb0"},
+]
+
+[package.dependencies]
+types-pytz = ">=2022.1.1"
 
 [[package]]
 name = "parso"
@@ -4721,6 +4751,202 @@ tests = ["autopep8", "flake8", "isort", "numpy", "pytest", "scipy (>=1.7.1)"]
 tutorials = ["matplotlib", "pandas", "tabulate"]
 
 [[package]]
+name = "types-colorama"
+version = "0.4.15.11"
+description = "Typing stubs for colorama"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-colorama-0.4.15.11.tar.gz", hash = "sha256:a9421eb24d9cfc584880dc1d33b7fd406a14227c1f99f50c5ab9265e04d07638"},
+    {file = "types_colorama-0.4.15.11-py3-none-any.whl", hash = "sha256:d1e37571a19e152c930b3e789c316e9332e51a43bfcd4470b98225be974fb90c"},
+]
+
+[[package]]
+name = "types-decorator"
+version = "5.1.8.3"
+description = "Typing stubs for decorator"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-decorator-5.1.8.3.tar.gz", hash = "sha256:32dd380fc88d0e7a1f27a84ba1ce6e29ba0ad42caaa1b88e7b5d27e61f6e4962"},
+    {file = "types_decorator-5.1.8.3-py3-none-any.whl", hash = "sha256:2ad329af49b824db8069ebba9bf03b1cbcafba72eb338be255a1fd902e85edb9"},
+]
+
+[[package]]
+name = "types-docutils"
+version = "0.19.1.9"
+description = "Typing stubs for docutils"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-docutils-0.19.1.9.tar.gz", hash = "sha256:1d029567e67c52992fd42aa968778bc10a5e445c8450fc751d672d6f50330a4a"},
+    {file = "types_docutils-0.19.1.9-py3-none-any.whl", hash = "sha256:556fb7ee19248aa482caa142a830c940b776b0f8c7577a98abe0977574546a1d"},
+]
+
+[[package]]
+name = "types-jsonschema"
+version = "4.17.0.7"
+description = "Typing stubs for jsonschema"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-jsonschema-4.17.0.7.tar.gz", hash = "sha256:130e57c5f1ca755f95775d0822ad7a3907294e1461306af54baf804f317fd54c"},
+    {file = "types_jsonschema-4.17.0.7-py3-none-any.whl", hash = "sha256:e129b52be6df841d97a98f087631dd558f7812eb91ff7b733c3301bd2446271b"},
+]
+
+[[package]]
+name = "types-pillow"
+version = "9.5.0.2"
+description = "Typing stubs for Pillow"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-Pillow-9.5.0.2.tar.gz", hash = "sha256:b3f9f621f259566c19c1deca21901017c8b1e3e200ed2e49e0a2d83c0a5175db"},
+    {file = "types_Pillow-9.5.0.2-py3-none-any.whl", hash = "sha256:58fdebd0ffa2353ecccdd622adde23bce89da5c0c8b96c34f2d1eca7b7e42d0e"},
+]
+
+[[package]]
+name = "types-psutil"
+version = "5.9.5.12"
+description = "Typing stubs for psutil"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-psutil-5.9.5.12.tar.gz", hash = "sha256:61a91679d3fe737250013b624dca09375e7cc3ad77dcc734553746c429c02aca"},
+    {file = "types_psutil-5.9.5.12-py3-none-any.whl", hash = "sha256:e9a147b8561235c6afcce5aa1adb973fad9ab2c50cf89820697687f53510358f"},
+]
+
+[[package]]
+name = "types-pygments"
+version = "2.15.0.0"
+description = "Typing stubs for Pygments"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-Pygments-2.15.0.0.tar.gz", hash = "sha256:b5909267fe258dd00f3e65da8f098be30c0f7262805bef54e54eb69d75e2bc11"},
+    {file = "types_Pygments-2.15.0.0-py3-none-any.whl", hash = "sha256:40b0cc6925cdbafbec46c5b2d994a1219e264e9d44ea6ab5c76cb8b87e8257e1"},
+]
+
+[package.dependencies]
+types-docutils = "*"
+types-setuptools = "*"
+
+[[package]]
+name = "types-pytz"
+version = "2023.3.0.0"
+description = "Typing stubs for pytz"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-pytz-2023.3.0.0.tar.gz", hash = "sha256:ecdc70d543aaf3616a7e48631543a884f74205f284cefd6649ddf44c6a820aac"},
+    {file = "types_pytz-2023.3.0.0-py3-none-any.whl", hash = "sha256:4fc2a7fbbc315f0b6630e0b899fd6c743705abe1094d007b0e612d10da15e0f3"},
+]
+
+[[package]]
+name = "types-pywin32"
+version = "306.0.0.1"
+description = "Typing stubs for pywin32"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-pywin32-306.0.0.1.tar.gz", hash = "sha256:8034b54d8a04664e8fc1f075a6f2dee1fd2f63d0091a228a44501c92a8e06353"},
+    {file = "types_pywin32-306.0.0.1-py3-none-any.whl", hash = "sha256:19e17d85cb95cdaef652663ecf082164d64828c4ba0fe6f13fab2c183e107bc4"},
+]
+
+[[package]]
+name = "types-pyyaml"
+version = "6.0.12.9"
+description = "Typing stubs for PyYAML"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-PyYAML-6.0.12.9.tar.gz", hash = "sha256:c51b1bd6d99ddf0aa2884a7a328810ebf70a4262c292195d3f4f9a0005f9eeb6"},
+    {file = "types_PyYAML-6.0.12.9-py3-none-any.whl", hash = "sha256:5aed5aa66bd2d2e158f75dda22b059570ede988559f030cf294871d3b647e3e8"},
+]
+
+[[package]]
+name = "types-regex"
+version = "2023.5.5.0"
+description = "Typing stubs for regex"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-regex-2023.5.5.0.tar.gz", hash = "sha256:db5bf47db323b8df2603d48a80874786057af8112d5925155d277514bbdf502a"},
+    {file = "types_regex-2023.5.5.0-py3-none-any.whl", hash = "sha256:f592d01322cab707fd859dcd86a56c02481f0de52af844bf2ca0eb04e1d76417"},
+]
+
+[[package]]
+name = "types-setuptools"
+version = "67.7.0.1"
+description = "Typing stubs for setuptools"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-setuptools-67.7.0.1.tar.gz", hash = "sha256:980a2651b2b019809817e1585071596b87fbafcb54433ff3b12445461db23790"},
+    {file = "types_setuptools-67.7.0.1-py3-none-any.whl", hash = "sha256:471a4ecf6984ffada63ffcfa884bfcb62718bd2d1a1acf8ee5513ec99789ed5e"},
+]
+
+[[package]]
+name = "types-six"
+version = "1.16.21.8"
+description = "Typing stubs for six"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-six-1.16.21.8.tar.gz", hash = "sha256:02a892ff8f423c4c5d15de7c6f4d433e643c863bcbefabd19251b478cbb284ab"},
+    {file = "types_six-1.16.21.8-py3-none-any.whl", hash = "sha256:e118ebebb4944af96b4c022b15c0769c065af09126eb148b7797023e905e0652"},
+]
+
+[[package]]
+name = "types-tabulate"
+version = "0.9.0.2"
+description = "Typing stubs for tabulate"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-tabulate-0.9.0.2.tar.gz", hash = "sha256:1dd4322a3a146e9073169c74278b8f14a58eb9905ca9db0d2588df408f27cac9"},
+    {file = "types_tabulate-0.9.0.2-py3-none-any.whl", hash = "sha256:a2e41cc41b6b46bfaec78f8fd8e03058fda7a31af6f203a4b235f5482f571f6f"},
+]
+
+[[package]]
+name = "types-tqdm"
+version = "4.65.0.1"
+description = "Typing stubs for tqdm"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-tqdm-4.65.0.1.tar.gz", hash = "sha256:972dd871b6b2b8ff32f1f0f6fdfdf5a4ba2b0b848453689391bec8bd858fb1c4"},
+    {file = "types_tqdm-4.65.0.1-py3-none-any.whl", hash = "sha256:4894fe2b1581374ce9bca3f23d53729e4409d69b352e3d5db5829fa19482962c"},
+]
+
+[[package]]
+name = "types-typed-ast"
+version = "1.5.8.6"
+description = "Typing stubs for typed-ast"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-typed-ast-1.5.8.6.tar.gz", hash = "sha256:9543b5863db97b412a2b1d5f407c908336365a0bad304d64e8328a769f48c230"},
+    {file = "types_typed_ast-1.5.8.6-py3-none-any.whl", hash = "sha256:01edb7d635565fd27657a7e88c3cf204282e19a1fda4278b04eb4c7744a21de9"},
+]
+
+[[package]]
 name = "typing-extensions"
 version = "4.5.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
@@ -5319,4 +5545,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "f2dcad24db14979446c63a8bbb238b2310a705f36c0ccbef14fde7d3d39eb26d"
+content-hash = "67b2ed5f81ffd6ef79aee8e442b870f634c933f1fa495ca0830f18abd3932c45"
