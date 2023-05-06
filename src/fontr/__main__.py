@@ -2,7 +2,7 @@
 as `fontr` and `python -m fontr`
 """
 import importlib
-from pathlib import Path
+from pathlib import PurePosixPath
 
 from kedro.framework.cli.utils import KedroCliError, load_entry_points
 from kedro.framework.project import configure_project
@@ -37,7 +37,7 @@ def _find_run_command_in_plugins(plugins):
 
 
 def main(*args, **kwargs):
-    package_name = Path(__file__).parent.name
+    package_name = PurePosixPath(__file__).parent.name
     configure_project(package_name)
     run = _find_run_command(package_name)
     run(*args, **kwargs)
