@@ -5,5 +5,5 @@ repos:
     rev: 1.4.1
     hooks:
     - id: poetry-export
-      args: ["-f", "requirements.txt", "-o", "src/requirements.txt"]
-      args: ["-f", "requirements.txt", "-o", "src/requirements-test-only.txt", "--only=test"]
+      args: ["-f", "requirements.txt", "-o", "src/requirements.txt", "--without-hashes"]
+      args: ["-f", "requirements.txt", "-o", "src/requirements-test-only.txt", "--only=test", "--without-hashes"]

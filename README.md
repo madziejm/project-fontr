@@ -117,3 +117,11 @@ To automatically strip out all output cell contents before committing to `git`, 
 > *Note:* Your output cells will be retained locally.
 
 
+## ADD ME ;)
+poetry install
+poetry run kedro sagemaker run --auto-build
+poetry run black src
+poetry run mypy src --python-version=3.10 
+poetry run isort src # how about test?
+poetry run flake8 src # how about test?
+poetry run pytest src # how about test?
