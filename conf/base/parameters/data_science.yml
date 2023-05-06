@@ -1,3 +1,6 @@
 model_options:
   test_size: 0.2
-  random_state: 3
+  random_state_seed: 666
+  learning_rate: 0.1 # todo check
+  maxnepochs: 666
+  batch_size: 16 # todo check
