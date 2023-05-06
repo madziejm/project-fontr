@@ -1,67 +1,42 @@
+from typing import Any, Callable
+
 import pandas as pd
 
 
-def _is_true(x: pd.Series) -> pd.Series:
-    return x == "t"
-
-
-def _parse_percentage(x: pd.Series) -> pd.Series:
-    x = x.str.replace("%", "")
-    x = x.astype(float) / 100
-    return x
-
-
-def _parse_money(x: pd.Series) -> pd.Series:
-    x = x.str.replace("$", "", regex=True).str.replace(",", "")
-    x = x.astype(float)
-    return x
-
-
-def preprocess_companies(companies: pd.DataFrame) -> pd.DataFrame:
-    """Preprocesses the data for companies.
-
-    Args:
-        companies: Raw data.
-    Returns:
-        Preprocessed data, with `company_rating` converted to a float and
-        `iata_approved` converted to boolean.
-    """
-    companies["iata_approved"] = _is_true(companies["iata_approved"])
-    companies["company_rating"] = _parse_percentage(companies["company_rating"])
-    return companies
-
-
-def preprocess_shuttles(shuttles: pd.DataFrame) -> pd.DataFrame:
-    """Preprocesses the data for shuttles.
-
-    Args:
-        shuttles: Raw data.
-    Returns:
-        Preprocessed data, with `price` converted to a float and `d_check_complete`,
-        `moon_clearance_complete` converted to boolean.
-    """
-    shuttles["d_check_complete"] = _is_true(shuttles["d_check_complete"])
-    shuttles["moon_clearance_complete"] = _is_true(shuttles["moon_clearance_complete"])
-    shuttles["price"] = _parse_money(shuttles["price"])
-    return shuttles
-
-
-def create_model_input_table(
-    shuttles: pd.DataFrame, companies: pd.DataFrame, reviews: pd.DataFrame
+def list_files(
+    partitioned_file_list: dict[str, Callable[[], Any]],
+    parameters: dict,
+    limit: int = -1,
 ) -> pd.DataFrame:
-    """Combines all data to create a model input table.
+    results = []
 
-    Args:
-        shuttles: Preprocessed data for shuttles.
-        companies: Preprocessed data for companies.
-        reviews: Raw data for reviews.
-    Returns:
-        Model input table.
+    for partition_key, partition_load_func in sorted(partitioned_file_list.items()):
+        file_path = partition_load_func()
+        results.append(file_path)
 
-    """
-    rated_shuttles = shuttles.merge(reviews, left_on="id", right_on="shuttle_id")
-    model_input_table = rated_shuttles.merge(
-        companies, left_on="company_id", right_on="id"
+    df = pd.DataFrame(results)
+    return (
+        df if limit < 0 else df.sample(n=limit, random_state=parameters["random_state"])
     )
-    model_input_table = model_input_table.dropna()
-    return model_input_table
+
+
+def get_label2index_mapping(data: pd.DataFrame, parameters: dict) -> dict:
+    labels = data[parameters["target_column"]].unique()
+    label2index = {l: i for i, l in enumerate(sorted(labels))}
+    return label2index
+
+
+def split_data(
+    data: pd.DataFrame, parameters: dict[str, Any]
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    data_train = data.groupby(
+        parameters["target_column"], group_keys=True
+    ).apply(  # TODO: Perhaps something else
+        lambda g: g.sample(
+            frac=parameters["train_fraction"],
+            random_state=parameters["random_state"],
+        )
+    )
+
+    data_val = data.drop(data_train.index)
+    return data_train, data_val

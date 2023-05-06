@@ -2,53 +2,141 @@
 """
 
 import logging
-from typing import Dict, Tuple
+from multiprocessing import cpu_count
 
-# from sklearn.metrics import r2_score
-from sklearn.model_selection import train_test_split
+import pytorch_lightning as pl
+import torch
+import torchvision
+import tqdm
+from nodes.data_science import Autoencoder
+from PIL import Image
+from pytorch_lightning.accuracy import MulticlassAccuracy
+from pytorch_lightning.callbacks import TQDMProgressBar
+from torch.jit import ScriptModule
+from torcheval.metrics import MulticlassPrecision, MulticlassRecall
+
+from fontr.datasets import KedroPytorchImageDataset
 
 
-def split_data(data: pd.DataFrame, parameters: Dict) -> Tuple:
-    """Splits data into features and targets training and test sets.
-
-    Args:
-        data: Data containing features and target.
-        parameters: Parameters defined in parameters/data_science.yml.
-    Returns:
-        Split data.
-    """
-    X = data[parameters["features"]]
-    y = data["price"]
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=parameters["test_size"], random_state=parameters["random_state"]
+def get_dataloader(dataset, batch_size, num_workers=0):
+    # todo
+    raise torch.utils.data.DataLoader(
+        dataset, batch_size, num_workers=num_workers, shuffle=True
     )
-    return X_train, X_test, y_train, y_test
 
 
-def train_model(X_train, y_train) -> LinearRegression:
-    """Trains the linear regression model.
+def train_pytorch_autoencoder(
+    train_dataset: KedroPytorchImageDataset,
+    val_dataset: KedroPytorchImageDataset,
+    label2index: dict,
+    parameters: dict,
+):
+    """Trains the autoencoder.
 
     Args:
         X_train: Training data of independent features.
         y_train: Training data for price.
 
     Returns:
-        Trained model.
+        Trained autoencoder.
     """
-    model = LinearRegression()
-    model.fit(X_train, y_train)
-    return model
+    pl.seed_everything(parameters["random_state_seed"])
+
+    autoencoder = Autoencoder(lr=parameters["lr"])
+
+    trainer = pl.Trainer(
+        max_epochs=parameters["maxnepochs"],
+        logger=True,
+        max_steps=parameters.get("max_steps", -1),
+        accelerator="auto",
+        callbacks=[TQDMProgressBar()],
+    )
+    target_transform = torch.nn.Sequential()  # todo
+    trainer.fit(
+        autoencoder,
+        train_dataloaders=[
+            get_dataloader(
+                train_dataset.with_transforms(
+                    target_transform=target_transform,  # todo get this transform
+                ),
+                parameters["batch_size"],
+                num_workers=parameters.get("num_workers", cpu_count()),
+            )
+        ],
+        val_dataloaders=[
+            get_dataloader(
+                val_dataset.with_transforms(
+                    target_transform=target_transform  # todo get this transform
+                ),
+                parameters["batch_size"],
+                # train=False, TODO:
+            )
+        ],
+    )
+
+    return autoencoder.to_torchscript()
 
 
-def evaluate_model(model, X_test, y_test):
-    """Calculates and logs the coefficient of determination.
+# todo add train_pytorch_classifier function
+
+# todo add evaluate_autoencoder
+
+
+@torch.no_grad()
+def evaluate_classifier(
+    classifier: ScriptModule,
+    test_dataset: KedroPytorchImageDataset,
+    label2index: dict,
+    parameters: dict,
+):
+    """Evaluate classifier on test dataset
 
     Args:
-        model: Trained model.
-        X_test: Testing data of independent features.
-        y_test: Testing data for price.
+        classifier (ScriptModule): Trained classifier
+        test_dataset (KedroPytorchImageDataset): test dataset
+        label2index (dict): labels
+        parameters (dict): pipeline parameters
     """
-    # y_pred = model.predict(X_test)
-    # score = r2_score(y_test, y_pred)
-    # logger = logging.getLogger(__name__)
-    # logger.info("Model has a coefficient R^2 of %.3f on test data.", score)
+    data_loader = get_dataloader(
+        test_dataset.with_transforms(
+            # target_transform=todo
+        ),
+        parameters["batch_size"],
+        # train=False, TODO:
+    )
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    num_classes = len(label2index)
+
+    precision, recall, accuracy = (
+        MulticlassPrecision(num_classes),
+        MulticlassRecall(num_classes),
+        MulticlassAccuracy(num_classes),
+    )
+
+    for batch in tqdm.tqdm(iter(data_loader), "Test set evaluation", len(test_dataset)):
+        x, y = batch
+        preds = classifier(x.to(device).cpu())
+        precision.update(preds, y)
+        recall.update(preds, y)
+        accuracy.update(preds, y)
+
+    logging.info(f"Precision{precision.compute():0.3f}")
+    logging.info(f"Recall{recall.compute():0.3f}")
+    logging.info(f"Accuracy{accuracy.compute():0.3f}")
+
+
+@torch.no_grad()
+def predict(
+    classifier: ScriptModule,
+    # test_dataset: KedroPytorchImageDataset,
+    file_to_predict: str,
+    label2index: dict,
+    parameters: dict,
+):
+    img = Image.open(file_to_predict).convert("RGB")  # resize?
+    x = torchvision.transforms.functional.to_tensor(img).unsqueeze(0)
+    preds = classifier(x).squeeze()
+
+    print(preds)

@@ -2,43 +2,53 @@ from typing import Any
 
 import pytorch_lightning as pl
 from torch import nn
-from torch.nn import functional as F
-from torchmetrics import Accuracy  # todo poetry add torchmetrics
+from torch.optim import Adagrad
+from torchmetrics import MeanSquaredError  # todo poetry add torchmetrics
 
 
 class Autoencoder(pl.LightningModule):
-    """TODOTODO
+    """Autoencoder todo description"""
 
-    Args:
-        pl (_type_): _description_
-    """
-
-    def __init__(self) -> None:
-        super.__init__()
-        self.lr = 0.0  # todo
+    def __init__(self, lr) -> None:
+        super().__init__()
+        self.lr = lr  # todo
         self.nclasses = 0  # todo
 
         # todo scale input to 105x105
+
         # todo convert to grayscale
         self.encoder = nn.Sequential(
-            nn.Flatten(),
-            nn.Conv2d(in_channels, out_channels),  # todo
-            nn.AvgPool2d(kernel_size),  # todo
-            nn.Conv2d(in_channels, out_channels),  # todo
+            nn.Conv2d(in_channels=3, out_channels=64, kernel_size=48),  # todo
+            nn.MaxPool2d(2),  # todo
+            nn.Conv2d(in_channels=64, out_channels=128, kernel_size=24),  # todo
         )
+
+        # todo save indices from MaxPool2d or use AvgPool2d
 
         self.decoder = nn.Sequential(
             nn.ConvTranspose2d(
-                in_channels,  # todo define the param # type: ignore[name-defined]
-                out_channels,  # todo define the param # type: ignore[name-defined]
-                kernel_size,  # todo define the param # type: ignore[name-defined]
+                in_channels=128,  # todo define the param # type: ignore[name-defined]
+                out_channels=64,  # todo define the param # type: ignore[name-defined]
+                kernel_size=24,  # todo define the param # type: ignore[name-defined]
             ),  # todo deconvolution
-            # F.interpolate(), # ? # https://github.com/pytorch/pytorch/issues/19805
-            # nn.MaxUnpool2d(),
+            nn.MaxUnpool2d(2),  # todo add indices
+            # F.interpolate(), # todo alternative
+            # https://github.com/pytorch/pytorch/issues/19805
             # another deconv
+            nn.ConvTranspose2d(
+                in_channels=64,  # todo define the param # type: ignore[name-defined]
+                out_channels=3,  # todo define the param # type: ignore[name-defined]
+                kernel_size=48,  # todo define the param # type: ignore[name-defined]
+            ),
         )
 
-        self.accuracy = Accuracy(task="multiclass", num_classes=self.nclasses)
+        self.mse = nn.ModuleDict(
+            {
+                "train_mse": MeanSquaredError(),  # todo fix this
+                "test_mse": MeanSquaredError(),  # todo fix this
+                "val_mse": MeanSquaredError(),  # todo fix this
+            }
+        )
 
     def encode(self, x):
         pass  # todo
@@ -48,23 +58,26 @@ class Autoencoder(pl.LightningModule):
 
     def forward(self, x):
         # todo scale input
-        x = self.model(x)
+        x = self.encoder(x)
+        x = self.decoder(x)
         return x
 
     def training_step(self, batch, batch_idx):
         x, y = batch
+        # todo calculate loss
+        loss = 0
         return loss
 
     def predict_step(self, batch: Any, batch_idx: int, dataloader_idx: int = 0) -> Any:
-        return self.forward(batch[0])
+        return self.forward(batch[0])  # todo 0????
 
     def validation_step(self, batch, batch_idx):
-        # self.accuracy.update(preds, y) # self.val_accuracy.update(preds, y)
-        pass  # todo
+        # self.mse['test_mse'].update(preds, real_y)# todo
+        pass
 
     def test_step(self, batch, batch_idx):
-        # self.accuracy.update(preds, y) # self.val_accuracy.update(preds, y)
-        pass  # todo
+        # self.mse['val_mse'].update(preds, real_y)# todo
+        pass
 
     def configure_optimizers(self):
         return Adagrad(self.parameters(), lr=self.lr)

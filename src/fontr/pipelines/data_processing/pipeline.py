@@ -1,28 +1,28 @@
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import create_model_input_table, preprocess_companies, preprocess_shuttles
+from .nodes import get_label2index_mapping, list_files, split_data
 
 
 def create_pipeline(**kwargs) -> Pipeline:
     return pipeline(
         [
             node(
-                func=preprocess_companies,
-                inputs="companies",
-                outputs="preprocessed_companies",
-                name="preprocess_companies_node",
+                func=list_files,
+                inputs=["train_images_list"],
+                outputs="train_data_all",
+                name="list_train_files",
             ),
             node(
-                func=preprocess_shuttles,
-                inputs="shuttles",
-                outputs="preprocessed_shuttles",
-                name="preprocess_shuttles_node",
+                func=get_label2index_mapping,
+                inputs=["train_data_all", "paremeters"],
+                outputs="label2index",
+                name="get_label2index",
             ),
             node(
-                func=create_model_input_table,
-                inputs=["preprocessed_shuttles", "preprocessed_companies", "reviews"],
-                outputs="model_input_table",
-                name="create_model_input_table_node",
+                func=split_data,
+                inputs=["train_data_all", "parameters"],
+                outputs=["train_dataset", "val_dataset"],
+                name="split_train_validation",
             ),
         ]
     )
