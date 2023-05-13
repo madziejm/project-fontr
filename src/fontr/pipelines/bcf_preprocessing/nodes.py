@@ -5,7 +5,7 @@ from kedro.io.core import get_protocol_and_path
 
 def read_bcf_metadata(
     bcf_file: fsspec.core.OpenFile,
-) -> tuple[fsspec.core.OpenFile, np.typing.NDArray]:
+) -> tuple[fsspec.core.OpenFile, np.ndarray]:
     """
     Reads metadata of bcf file using the potiner given as the argument.
 
@@ -18,7 +18,7 @@ def read_bcf_metadata(
         bcf_file (fsspec.core.OpenFile): File descriptior to the .bcf file.
 
     Returns:
-        tuple[fsspec.core.OpenFile, np.typing.NDArray]:
+        tuple[fsspec.core.OpenFile, np.ndarray]:
             File descriptor to the .bcf file.
             Read sizes of the .png files.
     """
@@ -29,14 +29,14 @@ def read_bcf_metadata(
 
 
 def upload_bcf_as_png(
-    bcf_file: fsspec.core.OpenFile, file_sizes: np.typing.NDArray, output_path: str
+    bcf_file: fsspec.core.OpenFile, file_sizes: np.ndarray, output_path: str
 ) -> None:
     """
     Stores .png files stored in a .bcf files in a `output_path`.
 
     Args:
         bcf_file (fsspec.core.OpenFile): File descriptior to the .bcf file.
-        file_sizes (np.typing.NDArray): File sizes read in `read_bcf_metadata` node.
+        file_sizes (np.ndarray): File sizes read in `read_bcf_metadata` node.
         output_path (str): Path where the .png files are stored
     """
     offsets = np.append(np.uint64(0), np.add.accumulate(file_sizes))
