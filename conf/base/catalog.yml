@@ -52,10 +52,25 @@
 #   dataset: fontr.datasets.FileWithDirAsLabel
 #   filename_fuffix: ".jpg"
 
-syn_train_bcf:
+VFR_real_test_bcf:
   type: fontr.datasets.GoogleDriveDataset
   filepath: gdrive://drive.google.com/drive/folders/1h2xyJVk1oVuetH4G5wZQRfwH9iSCUG0U
   file_name: vfr_large.bcf
+
+VFR_real_test_label:
+  type: fontr.datasets.GoogleDriveDataset
+  filepath: gdrive://drive.google.com/drive/folders/1h2xyJVk1oVuetH4G5wZQRfwH9iSCUG0U
+  file_name: vfr_large.label
+
+VFR_syn_train_bcf:
+  type: fontr.datasets.GoogleDriveDataset
+  filepath: gdrive://drive.google.com/drive/folders/1dRL_dMrAHkREXgwVwFy3j6WUB7EMQu24
+  file_name: train.bcf
+
+VFR_syn_train_label:
+  type: fontr.datasets.GoogleDriveDataset
+  filepath: gdrive://drive.google.com/drive/folders/1dRL_dMrAHkREXgwVwFy3j6WUB7EMQu24
+  file_name: train.label
 
 label2index: 
   type: json.JSONDataSet
