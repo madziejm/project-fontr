@@ -1,0 +1,2 @@
+VFR_real_test_s3: 's3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset-png/VFR-real-test'
+VFR_syn_train_s3: 's3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset-png/VFR-syn-train'
