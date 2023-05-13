@@ -1,10 +1,10 @@
 train_fraction: 0.9
 random_state: 2137
 target_column: 'label'
-lr: 0.001
-epochs: 3
-barch_size: 64
-image_size: 128
+lr: 0.01
+epochs: 5
+batch_size: 128
+image_size: 96
 max_steps: 32
 limit_test_set: 128
 limit: -1
