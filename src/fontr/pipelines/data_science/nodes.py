@@ -10,7 +10,10 @@ import torchvision
 import tqdm
 from nodes.data_science import Autoencoder
 from PIL import Image
-from pytorch_lightning.accuracy import MulticlassAccuracy
+
+# from pytorch_lightning.accuracy import (
+#     MulticlassAccuracy,
+# )  # use accuracy and pass multiclass param # todo
 from pytorch_lightning.callbacks import TQDMProgressBar
 from torch.jit import ScriptModule
 from torcheval.metrics import MulticlassPrecision, MulticlassRecall
@@ -112,7 +115,7 @@ def evaluate_classifier(
     precision, recall, accuracy = (
         MulticlassPrecision(num_classes),
         MulticlassRecall(num_classes),
-        MulticlassAccuracy(num_classes),
+        MulticlassAccuracy(num_classes),  # todo fix me
     )
 
     for batch in tqdm.tqdm(iter(data_loader), "Test set evaluation", len(test_dataset)):

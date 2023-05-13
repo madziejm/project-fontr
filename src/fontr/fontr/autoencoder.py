@@ -1,9 +1,10 @@
+from collections import OrderedDict
 from typing import Any
 
 import pytorch_lightning as pl
 from torch import nn
-from torch.optim import Adagrad
-from torchmetrics import MeanSquaredError  # todo poetry add torchmetrics
+from torch.optim import Adam
+from torchmetrics import MeanSquaredError  # todo poetry add torchmetrics???
 
 
 class Autoencoder(pl.LightningModule):
@@ -14,32 +15,58 @@ class Autoencoder(pl.LightningModule):
         self.lr = lr  # todo
         self.nclasses = 0  # todo
 
-        # todo scale input to 105x105
+        stride = 2
 
         # todo convert to grayscale
         self.encoder = nn.Sequential(
-            nn.Conv2d(in_channels=3, out_channels=64, kernel_size=48),  # todo
-            nn.MaxPool2d(2),  # todo
-            nn.Conv2d(in_channels=64, out_channels=128, kernel_size=24),  # todo
+            OrderedDict(
+                [
+                    (
+                        "conv1",
+                        nn.Conv2d(
+                            in_channels=1, out_channels=64, kernel_size=3, stride=stride
+                        ),
+                    ),
+                    ("lr1", nn.LeakyReLU(0.2)),
+                    ("maxpool1", nn.MaxPool2d(2, return_indices=True)),
+                    (
+                        "conv2",
+                        nn.Conv2d(
+                            in_channels=64,
+                            out_channels=128,
+                            kernel_size=3,
+                            stride=stride,
+                        ),
+                    ),
+                    ("lr2", nn.LeakyReLU(0.2)),
+                ]
+            )
         )
 
-        # todo save indices from MaxPool2d or use AvgPool2d
-
         self.decoder = nn.Sequential(
-            nn.ConvTranspose2d(
-                in_channels=128,  # todo define the param # type: ignore[name-defined]
-                out_channels=64,  # todo define the param # type: ignore[name-defined]
-                kernel_size=24,  # todo define the param # type: ignore[name-defined]
-            ),  # todo deconvolution
-            nn.MaxUnpool2d(2),  # todo add indices
-            # F.interpolate(), # todo alternative
-            # https://github.com/pytorch/pytorch/issues/19805
-            # another deconv
-            nn.ConvTranspose2d(
-                in_channels=64,  # todo define the param # type: ignore[name-defined]
-                out_channels=3,  # todo define the param # type: ignore[name-defined]
-                kernel_size=48,  # todo define the param # type: ignore[name-defined]
-            ),
+            OrderedDict(
+                [
+                    (
+                        "convt1",
+                        nn.ConvTranspose2d(
+                            in_channels=128,
+                            out_channels=64,
+                            kernel_size=3,
+                            stride=stride,
+                        ),
+                    ),
+                    (
+                        "maxunpool1",
+                        nn.MaxUnpool2d(2),
+                    ),  # todo add indices
+                    (
+                        "convt2",
+                        nn.ConvTranspose2d(
+                            in_channels=64, out_channels=1, kernel_size=3, stride=stride
+                        ),
+                    ),
+                ]
+            )
         )
 
         self.mse = nn.ModuleDict(
@@ -51,19 +78,41 @@ class Autoencoder(pl.LightningModule):
         )
 
     def encode(self, x):
-        pass  # todo
+        pooling_indices = []
+        encoded_x = x
+        for name, layer in self.encoder.named_children():
+            if name.startswith("conv") or name.startswith("lr"):
+                encoded_x = layer.forward(encoded_x)
+            elif name.startswith("maxpool"):
+                encoded_x, layer_chosen_indices = layer.forward(encoded_x)
+                pooling_indices.append(layer_chosen_indices)
+            else:
+                raise ValueError("Unexpected layer name")
+        return encoded_x, pooling_indices
 
-    def decode(self, x):
-        pass  # todo
+    def decode(self, encoded_x, pooling_indices):
+        decoded_x = encoded_x
+
+        for name, layer in self.decoder.named_children():
+            if name.startswith("convt"):
+                decoded_x = layer.forward(decoded_x)
+            elif name.startswith("maxunpool"):
+                decoded_x = layer.forward(
+                    decoded_x, pooling_indices.pop(), output_size=(47, 47)
+                )
+            else:
+                raise ValueError("Unexpected layer name")
+
+        return decoded_x
 
     def forward(self, x):
         # todo scale input
-        x = self.encoder(x)
-        x = self.decoder(x)
-        return x
+        encoded_x, pooling_indices = self.encode(x)
+        decoded_x = self.decode(encoded_x, pooling_indices)
+        return decoded_x
 
     def training_step(self, batch, batch_idx):
-        x, y = batch
+        x, y = batch  # todo no x, y
         # todo calculate loss
         loss = 0
         return loss
@@ -72,7 +121,7 @@ class Autoencoder(pl.LightningModule):
         return self.forward(batch[0])  # todo 0????
 
     def validation_step(self, batch, batch_idx):
-        # self.mse['test_mse'].update(preds, real_y)# todo
+        # self.mse['test_mse'].update(preds, real_y)2# todo
         pass
 
     def test_step(self, batch, batch_idx):
@@ -80,4 +129,4 @@ class Autoencoder(pl.LightningModule):
         pass
 
     def configure_optimizers(self):
-        return Adagrad(self.parameters(), lr=self.lr)
+        return Adam(self.parameters(), lr=self.lr)

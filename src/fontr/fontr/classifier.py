@@ -9,27 +9,52 @@ class Classifier(pl.LightningModule):
         self, lr
     ) -> None:  # todo add initializing from autoencoder pickle here
         super().__init__()
-        self.lr = lr  # todo add param
+        self.lr = lr  # todo use param
 
-        self.model = nn.Sequential(
-            nn.Conv2d(in_channels=3, out_channels=64, kernel_size=48, stride=4),  # todo
-            nn.BatchNorm2d(num_features=64),
-            nn.AvgPool2d(kernel_size=2),
-            nn.Conv2d(in_channels=64, out_channels=128, kernel_size=24),  # todo
-            nn.BatchNorm2d(num_features=128),
-            nn.AvgPool2d(kernel_size=2),
-            # encoder ends here
-            nn.Conv2d(in_channels=128, out_channels=256, kernel_size=12),  # todo
-            nn.Conv2d(in_channels=256, out_channels=256, kernel_size=12),  # todo
-            nn.Conv2d(in_channels=256, out_channels=256, kernel_size=12),  # todo
-            nn.Linear(4096, 4096),
-            nn.Linear(4096, 4096),
-            nn.Linear(4096, 2383),
+        stride = 2
+
+        self.encoder_prefix = nn.Sequential(
+            nn.Conv2d(
+                in_channels=1,
+                out_channels=64,
+                kernel_size=3,
+                stride=stride,
+                padding=2,
+            ),
+            nn.MaxPool2d(2, padding=1),
+            # nn.BatchNorm2d(num_features=64), # todo readd me?
+            nn.Conv2d(
+                in_channels=64,
+                out_channels=128,
+                kernel_size=3,
+                stride=stride,
+                padding=2,
+            ),
+            nn.MaxPool2d(2, padding=1),
+        )
+        # todo initialize encoder prefix from an already trained autoencoder
+        # freeze encoder layers # todo is needed???
+        for param in self.encoder_prefix.parameters():
+            param.requires_grad = False
+
+        self.classifier_layers = nn.Sequential(
+            nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3),
+            nn.Flatten(),
+            nn.ReLU(),
+            nn.Linear(1024, 512),
+            nn.Linear(512, 512),
+            nn.Linear(512, 150),
             nn.Softmax(),
         )
 
     def forward(self, x):
-        x = self.model(x)
+        x = self.encoder_prefix(x)
+        for layer in self.classifier_layers:
+            x = layer(x)
         return x
 
     def training_step(self, batch, batch_idx):
