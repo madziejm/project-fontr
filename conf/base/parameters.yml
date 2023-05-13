@@ -7,3 +7,4 @@ barch_size: 64
 image_size: 128
 max_steps: 32
 limit_test_set: 128
+limit: -1

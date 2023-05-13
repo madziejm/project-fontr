@@ -1,4 +1,4 @@
-from kedro.pipeline import Pipeline
+from kedro.pipeline import Pipeline, pipeline
 
 # from .nodes import (
 #     evaluate_classifier,
@@ -8,7 +8,7 @@ from kedro.pipeline import Pipeline
 
 
 def create_pipeline(**kwargs) -> Pipeline:
-    raise NotImplementedError()
+    return pipeline([])
     # TODO: Add autoencoder and classifier training and evaluation
     # return pipeline(
     # [

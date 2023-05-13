@@ -56,7 +56,6 @@ syn_train_bcf:
   type: fontr.datasets.GoogleDriveDataset
   filepath: gdrive://drive.google.com/drive/folders/1h2xyJVk1oVuetH4G5wZQRfwH9iSCUG0U
   file_name: vfr_large.bcf
-# test_image_list: 
 
 label2index: 
   type: json.JSONDataSet
@@ -66,7 +65,6 @@ train_dataset:
   type: fontr.datasets.KedroPytorchImageDataset
   path: data/train
 
-model:
-  type: fontr.dataset.TorchScriptModelDataset
-  filepath: data/model.pt
-
+# model: TODO:
+#   type: fontr.dataset.TorchScriptModelDataset
+#   filepath: data/model.pt

@@ -6,7 +6,6 @@ import pandas as pd
 def list_files(
     partitioned_file_list: dict[str, Callable[[], Any]],
     parameters: dict,
-    limit: int = -1,
 ) -> pd.DataFrame:
     results = []
 
@@ -14,6 +13,7 @@ def list_files(
         file_path = partition_load_func()
         results.append(file_path)
 
+    limit = parameters["limit"]
     df = pd.DataFrame(results)
     return (
         df if limit < 0 else df.sample(n=limit, random_state=parameters["random_state"])
