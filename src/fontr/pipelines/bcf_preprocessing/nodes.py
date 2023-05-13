@@ -1,5 +1,6 @@
 import fsspec
 import numpy as np
+import pandas as pd
 from kedro.io.core import get_protocol_and_path
 
 
@@ -52,4 +53,32 @@ def upload_bcf_as_png(
         with _fs.open(filename, "wb") as f:
             f.write(out)
 
+    return None
+
+
+def read_labels(label_file: fsspec.core.OpenFile) -> pd.DataFrame:
+    """
+    Stores reads labels saved under `label_file` and converts it
+    into a cvs file
+
+    Args:
+        label_file (fsspec.core.OpenFile): File descriptor to the .label file
+
+    Returns:
+        pd.DataFrame: Read labels as dataframe
+    """
+    labels = np.frombuffer(label_file.read(), dtype=np.uint32)
+    df_labels = pd.DataFrame(data=labels, columns=["labels"])
+    return df_labels
+
+
+def upload_labels_as_csv(df_labels: pd.DataFrame, output_path: str):
+    """
+    Stores passed `df_labels` in a `output_path`.
+
+    Args:
+        df_labels (pd.DataFrame): labels
+        output_path (str): Pathe where the labels.csv file is stored
+    """
+    df_labels.to_csv(f"{output_path}/labels.csv")
     return None
