@@ -16,9 +16,11 @@ from pytorch_lightning.accuracy import (
 )  # use accuracy and pass multiclass param # todo
 from pytorch_lightning.callbacks import TQDMProgressBar
 from torch.jit import ScriptModule
+import torchvision.transforms as transforms
 from torcheval.metrics import MulticlassPrecision, MulticlassRecall
 
 from fontr.datasets import KedroPytorchImageDataset
+from fontr.pipelines.data_science.transformers import AddGaussianNoise, ResizeImage
 
 
 def get_dataloader(dataset, batch_size, num_workers=0):
@@ -54,7 +56,16 @@ def train_pytorch_autoencoder(
         accelerator="auto",
         callbacks=[TQDMProgressBar()],
     )
-    target_transform = torch.nn.Sequential()  # todo
+    target_transform = transforms.Compose([
+        #transforms.ToTensor(),
+            AddGaussianNoise(0., 3.), 
+            transforms.GaussianBlur(kernel_size=3, sigma=(2.5, 3.5)),
+            transforms.RandomAffine(degrees=(-4, 4)),
+            transforms.RandomPerspective(distortion_scale=0.15, p=1.0),
+            transforms.Grayscale(), 
+            ResizeImage(96), 
+            transforms.RandomCrop((96, 96))
+        ])
     trainer.fit(
         autoencoder,
         train_dataloaders=[
