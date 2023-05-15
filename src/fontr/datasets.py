@@ -159,20 +159,24 @@ class TorchScriptModelDataset(AbstractDataSet):
 class GoogleDriveDataset(AbstractVersionedDataSet):
     def __init__(self, filepath: str, file_name: str):
         protocol, path = get_protocol_and_path(filepath)
-        file_id = path.split("/")[-1]
-
-        self.file_id = file_id
         self._protocol = protocol
+        self.file_id = path.split("/")[-1]
 
-        self._fs = fsspec.filesystem(self._protocol, **{"root_file_id": file_id})
+        self.file_name = file_name
+
+        self.__fs = None
+
         super().__init__(
             filepath=PurePosixPath(path),
             version=None,
-            exists_function=self._fs.exists,
-            glob_function=self._fs.glob,
         )
 
-        self.file_name = file_name
+    @property
+    def _fs(self):
+        if self.__fs is None:
+            self.__fs = fsspec.filesystem(self._protocol, root_file_id=self.file_id)
+            self._glob_function = self.__fs.glob
+        return self.__fs
 
     def _load(self) -> fsspec.core.OpenFile:
         return self._fs.open(self.file_name, "rb")
@@ -182,3 +186,6 @@ class GoogleDriveDataset(AbstractVersionedDataSet):
 
     def _describe(self) -> Dict[str, Any]:
         return {"fileid": self.file_id}
+
+    def exists(self) -> bool:
+        return self._fs.exists()
