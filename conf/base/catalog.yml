@@ -32,25 +32,13 @@
 #   type: kedro.extras.datasets.json.TextDataSet
 #   filepath: s3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset/AdobeVFR_release/fontlist.txt
 
-# todo
-# Autoencoder:
-#   type: pickle.todo
-#   filepath:
-#   versioned: true
 
-
-# todo
-# ClassificationModel:
-#   type: pickle.todo
-#   filepath:
-#   versioned: true
-
-# todo
-# train_images_list:
-#   type: PartitionedDataSet
-#   path: /home/maciej/Pobrane
-#   dataset: fontr.datasets.FileWithDirAsLabel
-#   filename_fuffix: ".jpg"
+# TODO
+train_images_list:
+  type: PartitionedDataSet
+  path: data/train/label2idx.json
+  dataset: fontr.datasets.FileWithDirAsLabel
+  filename_suffix: ".jpg"
 
 VFR_real_test_bcf:
   type: fontr.datasets.GoogleDriveDataset
@@ -72,14 +60,84 @@ VFR_syn_train_label:
   filepath: gdrive://drive.google.com/drive/folders/1dRL_dMrAHkREXgwVwFy3j6WUB7EMQu24
   file_name: train.label
 
-label2index: 
+idx2label:
+  type: pandas.CSVDataSet
+  filepath: s3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset-png/fontlist.csv
+
+label2idx:
   type: json.JSONDataSet
-  filepath: data/train/label2index.json
+  filepath: s3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset-png/label2idx.json
 
-train_dataset:
+real_dataset:
+  type: pandas.CSVDataSet
+  filepath: s3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset-png/VFR-real-test/labels.csv
+
+syn_dataset:
+  type: pandas.CSVDataSet
+  filepath: s3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset-png/VFR-syn-train/labels.csv
+
+syn_train@torch:
   type: fontr.datasets.KedroPytorchImageDataset
-  path: data/train
+  filepath: s3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset-png/VFR-real-test/train.csv
+  return_labels: false
+syn_train@csv:
+  type: pandas.CSVDataSet
+  filepath: s3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset-png/VFR-real-test/train.csv
 
-# model: TODO:
-#   type: fontr.dataset.TorchScriptModelDataset
-#   filepath: data/model.pt
+syn_valid@torch:
+  type: fontr.datasets.KedroPytorchImageDataset
+  filepath: s3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset-png/VFR-real-test/valid.csv
+  return_labels: false
+syn_valid@csv:
+  type: pandas.CSVDataSet
+  filepath: s3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset-png/VFR-real-test/valid.csv
+
+syn_test@torch:
+  type: fontr.datasets.KedroPytorchImageDataset
+  filepath: s3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset-png/VFR-real-test/test.csv
+  return_labels: false
+syn_test@csv:
+  type: pandas.CSVDataSet
+  filepath: s3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset-png/VFR-real-test/test.csv
+
+real_train@torch:
+  type: fontr.datasets.KedroPytorchImageDataset
+  filepath: s3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset-png/VFR-real-test/train.csv
+  return_labels: true
+real_train@csv:
+  type: pandas.CSVDataSet
+  filepath: s3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset-png/VFR-real-test/train.csv
+
+real_valid@torch:
+  type: fontr.datasets.KedroPytorchImageDataset
+  filepath: s3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset-png/VFR-real-test/valid.csv
+  return_labels: true
+real_valid@csv:
+  type: pandas.CSVDataSet
+  filepath: s3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset-png/VFR-real-test/valid.csv
+
+real_test@torch:
+  type: fontr.datasets.KedroPytorchImageDataset
+  filepath: s3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset-png/VFR-real-test/test.csv
+  return_labels: true
+real_test@csv:
+  type: pandas.CSVDataSet
+  filepath: s3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset-png/VFR-real-test/test.csv
+
+# trained autoencoder
+autoencoder:
+  type: fontr.datasets.TorchPickleModelDataset
+  filepath: data/autoencoder.pt
+  # versioned: true # TODO: add me
+
+# trained classifier, from torch.save
+classifier:
+  type: fontr.datasets.TorchPickleModelDataset
+  filepath: data/classifier.pt
+  # versioned: true # TODO: add me
+
+# trained classifier, torchscript JIT
+classifier_torchscript:
+  type: fontr.datasets.TorchScriptModelDataset
+  filepath: data/classifier.ts
+  # versioned: true # TODO: add me

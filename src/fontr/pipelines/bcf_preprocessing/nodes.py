@@ -72,9 +72,11 @@ def read_labels(label_file: fsspec.core.OpenFile) -> pd.DataFrame:
     return df_labels
 
 
-def upload_labels_as_csv(df_labels: pd.DataFrame, output_path: str):
+def upload_labels_as_csv(
+    df_labels: pd.DataFrame, output_path: str
+):  # TODO: use fsspec here
     """
-    Stores passed `df_labels` in a `output_path`.
+    Stores passed `df_labels` in the `output_path`.
 
     Args:
         df_labels (pd.DataFrame): labels
