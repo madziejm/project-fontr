@@ -1,6 +1,15 @@
-model_options:
-  test_size: 0.2
-  random_state_seed: 666
-  learning_rate: 0.1 # todo check
-  maxnepochs: 666
-  batch_size: 16 # todo check
+autoencoder:
+  lr: 0.01
+  maxnepochs: 666 # TODO
+  batch_size: 128
+  max_steps: 32
+  num_workers: 0
+
+  
+classifier:
+  lr: 0.01
+  maxnepochs: 666 # TODO
+  batch_size: 128
+  max_steps: 32
+  torch_jit_serialization_method: 'trace'
+  num_workers: 0

@@ -1,0 +1,6 @@
+data_split:
+  train_frac: 0.8
+  valid_frac: 0.1
+  test_frac: 0.1
+
+target_column: 1
