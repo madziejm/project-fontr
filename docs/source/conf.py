@@ -29,6 +29,8 @@ sys.path.insert(0, os.path.abspath(os.path.join("../../src")))
 project = "fontr"
 author = "Kedro"
 
+add_module_names = False
+
 # The short X.Y version.
 version = "0.1"
 
