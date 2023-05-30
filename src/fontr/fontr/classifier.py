@@ -86,6 +86,7 @@ class Classifier(pl.LightningModule):
                 "val_accuracy": MulticlassAccuracy(num_classes=self.nclasses),
             }
         )
+        self.save_hyperparameters()
 
     def forward(self, x):
         x = self.encoder(x)

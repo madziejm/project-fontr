@@ -1,6 +1,7 @@
 import logging
 from multiprocessing import cpu_count
 
+import wandb
 import pytorch_lightning as pl
 import torch
 import torchvision
@@ -16,6 +17,7 @@ from torchmetrics.classification import (
 from fontr.datasets import KedroPytorchImageDataset
 from fontr.fontr.autoencoder import Autoencoder
 from fontr.fontr.classifier import Classifier
+from fontr.fontr.logger import TorchLogger
 
 # from PIL import Image
 
@@ -44,10 +46,11 @@ def train_autoencoder(
     """
 
     autoencoder = Autoencoder(lr=parameters["lr"])
+    wandb_logger = TorchLogger().getLogger()
 
     trainer = pl.Trainer(
         max_epochs=parameters["maxnepochs"],
-        logger=True,
+        logger=wandb_logger,
         max_steps=parameters.get("max_steps", -1),
         accelerator="auto",
         callbacks=[TQDMProgressBar()],
@@ -103,10 +106,11 @@ def train_classifier(
     """
 
     classifier = Classifier(lr=parameters["lr"], nclasses=len(label2idx))
+    wandb_logger = TorchLogger().getLogger()
 
     trainer = pl.Trainer(
         max_epochs=parameters["maxnepochs"],
-        logger=True,
+        logger=wandb_logger,
         max_steps=parameters.get("max_steps", -1),
         accelerator="auto",
         callbacks=[TQDMProgressBar()],
@@ -175,6 +179,7 @@ def evaluate_autoencoder(
     Raises:
         NotImplementedError: Raised on every invocation.
     """
+    # TODO: Implement storing MSE scores using W&B.
     raise NotImplementedError
 
 
@@ -218,9 +223,16 @@ def evaluate_classifier(
         recall.update(preds, y)
         accuracy.update(preds, y)
 
-    logging.info(f"Precision: {precision.compute():0.3f}")
-    logging.info(f"Recall: {recall.compute():0.3f}")
-    logging.info(f"Accuracy: {accuracy.compute():0.3f}")
+    wandb_logger = TorchLogger().getLogger()
+    columns = ["Precision", "Recall", "Accuracy"]
+    data = [
+        [
+            f"{precision.compute():0.3f}",
+            f"{recall.compute():0.3f}",
+            f"{accuracy.compute():0.3f}",
+        ]
+    ]
+    wandb_logger.log_text("Classifier evaluation", columns=columns, data=data)
 
 
 @torch.no_grad()
