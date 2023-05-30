@@ -81,6 +81,7 @@ class Autoencoder(pl.LightningModule):
         self.maxunpool_output_sizes = ([48, 48], [24, 24])
 
         self.loss = nn.MSELoss(reduction="mean")
+        self.save_hyperparameters()
 
     def encode(self, x) -> Tuple[torch.Tensor, List[torch.Tensor]]:
         pooling_indices: List[torch.Tensor] = []
