@@ -38,8 +38,10 @@ class KedroPytorchImageDataset(Dataset, AbstractDataSet):
         fs_args: Optional[Dict] = None,
         credentials: Optional[Dict] = None,
         transform: Optional[Callable] = None,
+        transform_copy: Optional[Callable] = None,
         target_transform: Optional[Callable] = None,
         return_labels=True,
+        add_copies=False,
     ):
         """torch.utils.data.Dataset mixed with kedro.io.AbstractDataSet.
         filepath should be a CSV listing paths of images relative to the directory
@@ -52,6 +54,7 @@ class KedroPytorchImageDataset(Dataset, AbstractDataSet):
         AbstractDataSet.__init__(self)
         self.target_transform_fn = target_transform
         self.transform_fn = transform
+        self.copy_transform = transform_copy
 
         _fs_args = deepcopy(fs_args) or {}
         _credentials = deepcopy(credentials) or {}
@@ -79,9 +82,17 @@ class KedroPytorchImageDataset(Dataset, AbstractDataSet):
         self.data: Optional[pd.DataFrame] = None
 
         self.return_labels = return_labels
+        self.add_copies = add_copies
 
     def _load(self) -> "KedroPytorchImageDataset":
-        self.data = pd.read_csv(self.filepath)
+        if self.add_copies:
+            df = pd.read_csv(self.filepath)
+            df['copy'] = 0
+            df2 = df.copy(deep=True)
+            df2['copy'] = 1
+            self.data = pd.concat([df, df2])
+        else:
+            self.data = pd.read_csv(self.filepath)
         return self
 
     def _save(self, data: pd.DataFrame):
@@ -114,7 +125,10 @@ class KedroPytorchImageDataset(Dataset, AbstractDataSet):
         img_path = f"{self.dir_path}/{self.data.iloc[index, self.path_column]}.png"
         # I wish we had extensions in the CSV
         with self._fs.open(img_path, "rb") as f:
-            img = self.transform(Image.open(f).convert("RGB"))
+            if self.add_copies and self.data.iloc[index, 'copy']:
+                img = self.copy_transform(Image.open(f).convert("RGB"))
+            else:
+                img = self.transform(Image.open(f).convert("RGB"))
             if self.return_labels:
                 return img, self.target_transform(label)
             else:
@@ -124,10 +138,11 @@ class KedroPytorchImageDataset(Dataset, AbstractDataSet):
         return self.data.shape[0] if self.data is not None else 0
 
     def with_transforms(
-        self, transform=None, target_transform=None
+        self, transform=None, target_transform=None, copy_transform=None
     ) -> "KedroPytorchImageDataset":
         self.transform_fn = transform
         self.target_transform_fn = target_transform
+        self.copy_transform = copy_transform
         return self
 
 
