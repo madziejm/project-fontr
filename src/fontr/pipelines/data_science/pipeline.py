@@ -41,7 +41,7 @@ def create_pipeline(**kwargs) -> Pipeline:
                     "real_valid@torch",
                     "label2idx",
                     "params:classifier",
-                    "autoencoder"
+                    "autoencoder",
                 ],
                 outputs="classifier",
                 name="train_classifier_node",

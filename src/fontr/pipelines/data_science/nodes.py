@@ -108,9 +108,7 @@ def train_classifier(
     """
 
     classifier = Classifier(
-        lr=parameters["lr"],
-        autoencoder=autoencoder,
-        nclasses=len(label2idx)
+        lr=parameters["lr"], autoencoder=autoencoder, nclasses=len(label2idx)
     )
     wandb_logger = TorchLogger().getLogger()
 
