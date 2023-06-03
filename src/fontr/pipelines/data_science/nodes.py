@@ -56,6 +56,7 @@ def train_autoencoder(
         callbacks=[TQDMProgressBar()],
         log_every_n_steps=1,
     )
+
     # TODO add transforms here!!!
     transform = torch.nn.Sequential(
         torchvision.transforms.Grayscale(),
@@ -92,6 +93,7 @@ def train_classifier(
     val_dataset: KedroPytorchImageDataset,
     label2idx: dict,
     parameters: dict,
+    autoencoder: Autoencoder,
 ) -> Classifier:
     """Font classifier training loop.
 
@@ -105,7 +107,11 @@ def train_classifier(
         Classifier: Trained classifier.
     """
 
-    classifier = Classifier(lr=parameters["lr"], nclasses=len(label2idx))
+    classifier = Classifier(
+        lr=parameters["lr"],
+        autoencoder=autoencoder,
+        nclasses=len(label2idx)
+    )
     wandb_logger = TorchLogger().getLogger()
 
     trainer = pl.Trainer(
