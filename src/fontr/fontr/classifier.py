@@ -126,7 +126,7 @@ class Classifier(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         # TODO implement lr strategy "We start with the learning rate at 0.01, and follow a common heuristic to manually divide the learning rate by 10 when the validation error rate stops decreasing with the current rate" # noqa: E501
         # TODO document that batch_idx is not used (it comes from Lightning)
-        return self.base_step(batch, batch_idx, "train")
+        return self.base_step(batch[0], batch_idx, "train")
 
     def validation_step(self, batch, batch_idx: int):
         return self.base_step(batch, batch_idx, "val")
