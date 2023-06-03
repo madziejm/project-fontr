@@ -1,6 +1,9 @@
 ##########################
 # KEDRO PROJECT
 
+# ignoree telemetry confirmation
+.telemetry
+
 # ignore all local configuration
 conf/local/**
 !conf/local/.gitkeep
@@ -153,3 +156,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# wandb
+wandb/
