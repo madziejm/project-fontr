@@ -126,7 +126,10 @@ class Autoencoder(pl.LightningModule):
     #     self.log("decoder", str(self.decoder))
 
     def base_step(self, batch, batch_idx: int, step_name: str):
-        autoenc_output = self.forward(batch)
+        b, p, c, h, w = batch.shape
+        flatten_batch = batch.view(b * p, c, h, w)
+        autoenc_output = self.forward(flatten_batch)
+        autoenc_output = autoenc_output.view(b, p, c, h, w)
 
         mse_id: str = step_name + "_mse"
         self.mse[mse_id](autoenc_output, batch)

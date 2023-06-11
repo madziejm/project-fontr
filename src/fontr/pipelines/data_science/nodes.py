@@ -1,3 +1,4 @@
+import random
 import logging
 from multiprocessing import cpu_count
 
@@ -14,6 +15,7 @@ from torchmetrics.classification import (
     MulticlassRecall,
 )
 
+from fontr.fontr.transforms import Patch, AddGaussianNoise, ResizePatches
 from fontr.datasets import KedroPytorchImageDataset
 from fontr.fontr.autoencoder import Autoencoder
 from fontr.fontr.classifier import Classifier
@@ -26,6 +28,27 @@ def get_dataloader(dataset, batch_size, num_workers=None, shuffle=True):
     num_workers = cpu_count() if num_workers is None else num_workers
     return torch.utils.data.DataLoader(
         dataset, batch_size, num_workers=num_workers, shuffle=shuffle
+    )
+
+
+def get_transforms(num_of_patches: int = 10) -> torch.nn.Sequential:
+    """
+    Get transforms that should be used with dataloader to
+    prepare the data to be used by models.
+
+    Args:
+        num_of_patches (int, optional): Number of patches that is created
+            for each image.
+    """
+
+    return torch.nn.Sequential(
+        AddGaussianNoise(0.0, 3.0),
+        torchvision.transforms.GaussianBlur(kernel_size=3, sigma=(2.5, 3.5)),
+        torchvision.transforms.RandomAffine(degrees=(-4, 4)),
+        torchvision.transforms.RandomPerspective(distortion_scale=0.15, p=1.0),
+        torchvision.transforms.Grayscale(),
+        Patch(10, 96, 96),
+        ResizePatches(96),
     )
 
 
@@ -57,19 +80,12 @@ def train_autoencoder(
         log_every_n_steps=1,
     )
 
-    # TODO add transforms here!!!
-    transform = torch.nn.Sequential(
-        torchvision.transforms.Grayscale(),
-        # TODO welp, actually the images in the paper are 105x105
-        # consider changing architecture accordingly (from 96x96 inputs)
-        torchvision.transforms.Resize((96, 96)),
-    )
     trainer.fit(
         autoencoder,
         train_dataloaders=[
             get_dataloader(
                 train_dataset.with_transforms(
-                    transform=transform,
+                    transform=get_transforms(),
                 ),
                 parameters["batch_size"],
                 num_workers=parameters.get("num_workers"),
@@ -77,7 +93,7 @@ def train_autoencoder(
         ],
         val_dataloaders=[
             get_dataloader(
-                val_dataset.with_transforms(transform=transform),
+                val_dataset.with_transforms(transform=get_transforms()),
                 parameters["batch_size"],
                 num_workers=parameters.get("num_workers"),
                 shuffle=False,
@@ -121,19 +137,12 @@ def train_classifier(
         log_every_n_steps=1,
     )
 
-    # TODO add transforms here!!!
-    transform = torch.nn.Sequential(
-        torchvision.transforms.Grayscale(),
-        # TODO welp, actually the images in the paper are 105x105
-        # consider changing architecture accordingly (from 96x96 inputs)
-        torchvision.transforms.Resize((96, 96)),
-    )
     trainer.fit(
         classifier,
         train_dataloaders=[
             get_dataloader(
                 train_dataset.with_transforms(
-                    transform=transform,
+                    transform=get_transforms(),
                 ),
                 parameters["batch_size"],
                 num_workers=parameters.get("num_workers"),
@@ -141,7 +150,7 @@ def train_classifier(
         ],
         val_dataloaders=[
             get_dataloader(
-                val_dataset.with_transforms(transform=transform),
+                val_dataset.with_transforms(transform=get_transforms()),
                 parameters["batch_size"],
                 num_workers=parameters.get("num_workers"),
                 shuffle=False,
@@ -203,9 +212,7 @@ def evaluate_classifier(
         parameters (dict): pipeline parameters
     """
     data_loader = get_dataloader(
-        test_dataset.with_transforms(
-            # transform=TODO
-        ),
+        test_dataset.with_transforms(transform=get_transforms()),
         parameters["batch_size"],
         num_workers=parameters.get("num_workers"),
     )

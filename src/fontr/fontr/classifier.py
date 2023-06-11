@@ -1,7 +1,7 @@
 from typing import Any, Optional
 
 import pytorch_lightning as pl
-from torch import nn
+from torch import nn, max
 from torch.optim import Adam
 from torchmetrics.classification import MulticlassAccuracy
 
@@ -106,13 +106,15 @@ class Classifier(pl.LightningModule):
         return nn.functional.softmax(self.forward(batch), dim=1)
 
     def base_step(self, batch, batch_idx: int, step_name: str):
-        # TODO somehow we do not get labels heer
-        # and this fails
-        # it should not be the case as the DataSet seems to be okay
-        # is it the DataLoader to blame?
         x, y = batch
+        b, p, c, h, w = x.shape
+        flatten_x = x.view(b * p, c, h, w)
+        logits = self.forward(flatten_x)
 
-        logits = self.forward(x)
+        logits = logits.view(b, p, -1)
+        # Getting max from every set of patches
+        logits = max(logits, 1).values
+
         accuracy_id: str = step_name + "_accuracy"
         self.accuracy[accuracy_id].forward(logits, y)
         self.log(
