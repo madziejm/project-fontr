@@ -114,7 +114,7 @@ class KedroPytorchImageDataset(Dataset, AbstractDataSet):
     
     def copy_transform(self, img: Image.Image) -> torch.Tensor:
         img = torchvision.transforms.functional.to_tensor(img)
-        return self.transform_copy(img) if self.transform_fn else img
+        return self.transform_copy(img) if self.transform_copy else img
 
     def target_transform(self, label: Any) -> torch.Tensor:
         if self.target_transform_fn:
@@ -146,7 +146,7 @@ class KedroPytorchImageDataset(Dataset, AbstractDataSet):
     ) -> "KedroPytorchImageDataset":
         self.transform_fn = transform
         self.target_transform_fn = target_transform
-        self.copy_transform = copy_transform
+        self.transform_copy = copy_transform
         return self
 
 
