@@ -17,5 +17,5 @@ class ResizeImage(object):
 
     def __call__(self, tensor):
         return transforms.Resize(
-            (self.height, int(tensor.size()[2] * (self.height / tensor.size()[1])))
+            (self.height, max(self.height, int(tensor.size()[2] * (self.height / tensor.size()[1]))))
         )(tensor)

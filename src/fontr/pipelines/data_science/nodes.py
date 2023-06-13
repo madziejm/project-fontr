@@ -17,11 +17,9 @@ from torchmetrics.classification import (
 from fontr.datasets import KedroPytorchImageDataset
 from fontr.fontr.autoencoder import Autoencoder
 from fontr.fontr.classifier import Classifier
-<<<<<<< HEAD
 from fontr.fontr.logger import TorchLogger
-=======
 from fontr.pipelines.data_science.transformers import AddGaussianNoise, ResizeImage
->>>>>>> d6d4fc4 (transformers added, augment train data)
+from torchvision import transforms
 
 # from PIL import Image
 
@@ -68,7 +66,8 @@ def train_autoencoder(
         # consider changing architecture accordingly (from 96x96 inputs)
         torchvision.transforms.Resize((96, 96)),
     )
-    transform_copy = torch.nn.Sequential(
+    transform_copy = transforms.Compose([
+        torchvision.transforms.ToTensor(),
         AddGaussianNoise(0.0, 3.0),
         torchvision.transforms.GaussianBlur(kernel_size=3, sigma=(2.5, 3.5)),
         torchvision.transforms.RandomAffine(degrees=(-4, 4)),
@@ -76,7 +75,7 @@ def train_autoencoder(
         torchvision.transforms.Grayscale(),
         ResizeImage(96),
         torchvision.transforms.RandomCrop((96, 96)),
-    )
+    ])
     trainer.fit(
         autoencoder,
         train_dataloaders=[
@@ -141,12 +140,24 @@ def train_classifier(
         # consider changing architecture accordingly (from 96x96 inputs)
         torchvision.transforms.Resize((96, 96)),
     )
+
+    transform_copy = transforms.Compose([
+        torchvision.transforms.ToTensor(),
+        AddGaussianNoise(0.0, 3.0),
+        torchvision.transforms.GaussianBlur(kernel_size=3, sigma=(2.5, 3.5)),
+        torchvision.transforms.RandomAffine(degrees=(-4, 4)),
+        torchvision.transforms.RandomPerspective(distortion_scale=0.15, p=1.0),
+        torchvision.transforms.Grayscale(),
+        ResizeImage(96),
+        torchvision.transforms.RandomCrop((96, 96)),
+    ])
+
     trainer.fit(
         classifier,
         train_dataloaders=[
             get_dataloader(
                 train_dataset.with_transforms(
-                    transform=transform,
+                    transform=transform, copy_transform=transform_copy
                 ),
                 parameters["batch_size"],
                 num_workers=parameters.get("num_workers"),

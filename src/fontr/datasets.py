@@ -125,7 +125,7 @@ class KedroPytorchImageDataset(Dataset, AbstractDataSet):
         img_path = f"{self.dir_path}/{self.data.iloc[index, self.path_column]}.png"
         # I wish we had extensions in the CSV
         with self._fs.open(img_path, "rb") as f:
-            if self.add_copies and self.data.iloc[index, 'copy']:
+            if self.add_copies and self.data.iloc[index]['copy']:
                 img = self.copy_transform(Image.open(f).convert("RGB"))
             else:
                 img = self.transform(Image.open(f).convert("RGB"))
