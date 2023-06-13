@@ -17,13 +17,9 @@ from torchmetrics.classification import (
 from fontr.datasets import KedroPytorchImageDataset
 from fontr.fontr.autoencoder import Autoencoder
 from fontr.fontr.classifier import Classifier
-<<<<<<< HEAD
 from fontr.fontr.logger import TorchLogger
 from fontr.pipelines.data_science.transformers import AddGaussianNoise, ResizeImage
 from torchvision import transforms
-=======
-from fontr.pipelines.data_science.transformers import AddGaussianNoise, ResizeImage
->>>>>>> d6d4fc4db2b189d50e16eb3e4b0b928996fab31b
 
 # from PIL import Image
 
