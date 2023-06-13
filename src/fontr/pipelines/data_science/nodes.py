@@ -67,7 +67,6 @@ def train_autoencoder(
         torchvision.transforms.Resize((96, 96)),
     )
     transform_copy = transforms.Compose([
-        torchvision.transforms.ToTensor(),
         AddGaussianNoise(0.0, 3.0),
         torchvision.transforms.GaussianBlur(kernel_size=3, sigma=(2.5, 3.5)),
         torchvision.transforms.RandomAffine(degrees=(-4, 4)),
@@ -142,7 +141,6 @@ def train_classifier(
     )
 
     transform_copy = transforms.Compose([
-        torchvision.transforms.ToTensor(),
         AddGaussianNoise(0.0, 3.0),
         torchvision.transforms.GaussianBlur(kernel_size=3, sigma=(2.5, 3.5)),
         torchvision.transforms.RandomAffine(degrees=(-4, 4)),

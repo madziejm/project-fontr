@@ -54,7 +54,7 @@ class KedroPytorchImageDataset(Dataset, AbstractDataSet):
         AbstractDataSet.__init__(self)
         self.target_transform_fn = target_transform
         self.transform_fn = transform
-        self.copy_transform = transform_copy
+        self.transform_copy = transform_copy
 
         _fs_args = deepcopy(fs_args) or {}
         _credentials = deepcopy(credentials) or {}
@@ -111,6 +111,10 @@ class KedroPytorchImageDataset(Dataset, AbstractDataSet):
     def transform(self, img: Image.Image) -> torch.Tensor:
         img = torchvision.transforms.functional.to_tensor(img)
         return self.transform_fn(img) if self.transform_fn else img
+    
+    def copy_transform(self, img: Image.Image) -> torch.Tensor:
+        img = torchvision.transforms.functional.to_tensor(img)
+        return self.transform_copy(img) if self.transform_fn else img
 
     def target_transform(self, label: Any) -> torch.Tensor:
         if self.target_transform_fn:
