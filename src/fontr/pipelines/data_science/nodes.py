@@ -66,15 +66,17 @@ def train_autoencoder(
         # consider changing architecture accordingly (from 96x96 inputs)
         torchvision.transforms.Resize((96, 96)),
     )
-    transform_copy = transforms.Compose([
-        AddGaussianNoise(0.0, 3.0),
-        torchvision.transforms.GaussianBlur(kernel_size=3, sigma=(2.5, 3.5)),
-        torchvision.transforms.RandomAffine(degrees=(-4, 4)),
-        torchvision.transforms.RandomPerspective(distortion_scale=0.15, p=1.0),
-        torchvision.transforms.Grayscale(),
-        ResizeImage(96),
-        torchvision.transforms.RandomCrop((96, 96)),
-    ])
+    transform_copy = transforms.Compose(
+        [
+            AddGaussianNoise(0.0, 3.0),
+            torchvision.transforms.GaussianBlur(kernel_size=3, sigma=(2.5, 3.5)),
+            torchvision.transforms.RandomAffine(degrees=(-4, 4)),
+            torchvision.transforms.RandomPerspective(distortion_scale=0.15, p=1.0),
+            torchvision.transforms.Grayscale(),
+            ResizeImage(96),
+            torchvision.transforms.RandomCrop((96, 96)),
+        ]
+    )
     trainer.fit(
         autoencoder,
         train_dataloaders=[
@@ -140,15 +142,17 @@ def train_classifier(
         torchvision.transforms.Resize((96, 96)),
     )
 
-    transform_copy = transforms.Compose([
-        AddGaussianNoise(0.0, 3.0),
-        torchvision.transforms.GaussianBlur(kernel_size=3, sigma=(2.5, 3.5)),
-        torchvision.transforms.RandomAffine(degrees=(-4, 4)),
-        torchvision.transforms.RandomPerspective(distortion_scale=0.15, p=1.0),
-        torchvision.transforms.Grayscale(),
-        ResizeImage(96),
-        torchvision.transforms.RandomCrop((96, 96)),
-    ])
+    transform_copy = transforms.Compose(
+        [
+            AddGaussianNoise(0.0, 3.0),
+            torchvision.transforms.GaussianBlur(kernel_size=3, sigma=(2.5, 3.5)),
+            torchvision.transforms.RandomAffine(degrees=(-4, 4)),
+            torchvision.transforms.RandomPerspective(distortion_scale=0.15, p=1.0),
+            torchvision.transforms.Grayscale(),
+            ResizeImage(96),
+            torchvision.transforms.RandomCrop((96, 96)),
+        ]
+    )
 
     trainer.fit(
         classifier,

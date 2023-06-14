@@ -87,9 +87,9 @@ class KedroPytorchImageDataset(Dataset, AbstractDataSet):
     def _load(self) -> "KedroPytorchImageDataset":
         if self.add_copies:
             df = pd.read_csv(self.filepath)
-            df['copy'] = 0
+            df["copy"] = 0
             df2 = df.copy(deep=True)
-            df2['copy'] = 1
+            df2["copy"] = 1
             self.data = pd.concat([df, df2])
         else:
             self.data = pd.read_csv(self.filepath)
@@ -111,7 +111,7 @@ class KedroPytorchImageDataset(Dataset, AbstractDataSet):
     def transform(self, img: Image.Image) -> torch.Tensor:
         img = torchvision.transforms.functional.to_tensor(img)
         return self.transform_fn(img) if self.transform_fn else img
-    
+
     def copy_transform(self, img: Image.Image) -> torch.Tensor:
         img = torchvision.transforms.functional.to_tensor(img)
         return self.transform_copy(img) if self.transform_copy else img
@@ -129,7 +129,7 @@ class KedroPytorchImageDataset(Dataset, AbstractDataSet):
         img_path = f"{self.dir_path}/{self.data.iloc[index, self.path_column]}.png"
         # I wish we had extensions in the CSV
         with self._fs.open(img_path, "rb") as f:
-            if self.add_copies and self.data.iloc[index]['copy']:
+            if self.add_copies and self.data.iloc[index]["copy"]:
                 img = self.copy_transform(Image.open(f).convert("RGB"))
             else:
                 img = self.transform(Image.open(f).convert("RGB"))
