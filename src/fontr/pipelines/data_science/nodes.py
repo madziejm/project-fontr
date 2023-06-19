@@ -173,7 +173,7 @@ def serialize_model_to_torch_jit(
     Returns:
         ScriptModule: Serialized model
     """
-    return model.to_torchscript(method=torch_jit_serialization_method)  # type: ignore
+    return model.to_torchscript()  # type: ignore
 
 
 @torch.no_grad()
