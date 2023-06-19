@@ -1,39 +1,3 @@
-# Here you can define all your data sets by using simple YAML syntax.
-#
-# Documentation for this file format can be found in "The Data Catalog"
-# Link: https://kedro.readthedocs.io/en/stable/data/data_catalog.html
-#
-# We support interacting with a variety of data stores including local file systems, cloud, network and HDFS
-#
-# An example data set definition can look as follows:
-#
-# The Data Catalog supports being able to reference the same file using two different DataSet implementations
-# (transcoding), templating and a way to reuse arguments that are frequently repeated. See more here:
-# https://kedro.readthedocs.io/en/stable/data/data_catalog.html
-
-# todo
-# unlabeled_imgs:
-#   type: PartitionedDataSet
-#   filepath: s3://sagemaker-eu-central-1-830437619288-datasets/scrape-wtf-new/
-#   filename_suffix: ".png"
-#   layer: raw
-
-# todo
-# labeled_imgs:
-#   type: PartitionedDataSet
-#   filename_suffix: ".png"
-#   filepath: 's3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset/AdobeVFR_release/Raw Image/VFR_real_test/''
-
-# todo
-# labels:
-
-# todo
-# fontlist:
-#   type: kedro.extras.datasets.json.TextDataSet
-#   filepath: s3://sagemaker-eu-central-1-830437619288-datasets/adobe-dataset/AdobeVFR_release/fontlist.txt
-
-
-# TODO
 train_images_list:
   type: PartitionedDataSet
   path: data/train/label2idx.json
