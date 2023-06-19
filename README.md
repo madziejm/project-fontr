@@ -95,6 +95,10 @@ By leveraging the capabilities of the kedro framework, we were able to develop a
 Visualisation of the project using `kedro-viz` can be seen bellow:
 ![Pipeline](./img/kedro-pipeline.png)
 
+## Results
+
+TODO:
+
 ## Sources
 
 Publications on the problem of font recognition:
