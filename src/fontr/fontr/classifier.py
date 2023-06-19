@@ -3,7 +3,7 @@ from typing import Any, Optional
 import pytorch_lightning as pl
 from torch import nn, max
 from torch.optim import Adam
-from torchmetrics.classification import MulticlassAccuracy
+from torchmetrics.classification import Accuracy
 
 from fontr.fontr.autoencoder import Autoencoder
 
@@ -27,6 +27,7 @@ class Classifier(pl.LightningModule):
         self.lr = lr
         self.criterion = nn.CrossEntropyLoss()
         self.nclasses = nclasses
+        self.top_k = 10
 
         self.encoder = nn.Sequential(
             nn.Conv2d(
@@ -81,9 +82,25 @@ class Classifier(pl.LightningModule):
 
         self.accuracy = nn.ModuleDict(
             {
-                "train_accuracy": MulticlassAccuracy(num_classes=self.nclasses),
-                "test_accuracy": MulticlassAccuracy(num_classes=self.nclasses),
-                "val_accuracy": MulticlassAccuracy(num_classes=self.nclasses),
+                "train_accuracy": Accuracy(
+                    task="multiclass", num_classes=self.nclasses
+                ),
+                "test_accuracy": Accuracy(task="multiclass", num_classes=self.nclasses),
+                "val_accuracy": Accuracy(task="multiclass", num_classes=self.nclasses),
+            }
+        )
+
+        self.top_k_accuracy = nn.ModuleDict(
+            {
+                f"train_top_{self.top_k}_accuracy": Accuracy(
+                    task="multiclass", num_classes=self.nclasses, top_k=self.top_k
+                ),
+                f"test_top_{self.top_k}_accuracy": Accuracy(
+                    task="multiclass", num_classes=self.nclasses, top_k=self.top_k
+                ),
+                f"val_top_{self.top_k}_accuracy": Accuracy(
+                    task="multiclass", num_classes=self.nclasses, top_k=self.top_k
+                ),
             }
         )
         self.save_hyperparameters()
@@ -93,37 +110,45 @@ class Classifier(pl.LightningModule):
         x = self.classifier_suffix(x)
         return x
 
-    # def on_train_start(self) -> None:
-    #     # actually logging strings is not supported in pl
-    #     # TODO adjust or remove
-    #     super().on_train_start()
-    #     assert self.logger is not None
-    #     self.logger.log("encoder", str(self.encoder))
-    #     self.logger.log("classifier_suffix", str(self.classifier_suffix))
-
     def predict_step(self, batch: Any, batch_idx: int, dataloader_idx: int = 0):
-        # TODO: 15 patch-averaging here?
         return nn.functional.softmax(self.forward(batch), dim=1)
 
     def base_step(self, batch, batch_idx: int, step_name: str):
         x, y = batch
         b, p, c, h, w = x.shape
         flatten_x = x.view(b * p, c, h, w)
-        logits = self.forward(flatten_x)
+        output = self.forward(flatten_x)
 
-        logits = logits.view(b, p, -1)
+        output = output.view(b, p, -1)
         # Getting max from every set of patches
-        logits = max(logits, 1).values
+        output = max(output, 1).values
+        softmax = nn.functional.softmax(output, dim=1)
 
-        accuracy_id: str = step_name + "_accuracy"
-        self.accuracy[accuracy_id].forward(logits, y)
+        accuracy_id = step_name + "_accuracy"
+        self.accuracy[accuracy_id].forward(softmax, y)
         self.log(
             accuracy_id,
             self.accuracy[accuracy_id],
             on_step=True,
             on_epoch=True,
         )
-        return self.criterion(input=logits, target=y)
+        top_k_accuracy_id = step_name + f"_top_{self.top_k}_accuracy"
+        self.top_k_accuracy[top_k_accuracy_id].forward(softmax, y)
+        self.log(
+            top_k_accuracy_id,
+            self.top_k_accuracy[top_k_accuracy_id],
+            on_step=True,
+            on_epoch=True,
+        )
+
+        cross_entropy = self.criterion(input=output, target=y)
+        self.log(
+            step_name + "_cross_entropy",
+            cross_entropy,
+            on_step=True,
+            on_epoch=True,
+        )
+        return cross_entropy
 
     def training_step(self, batch, batch_idx):
         # TODO implement lr strategy "We start with the learning rate at 0.01, and follow a common heuristic to manually divide the learning rate by 10 when the validation error rate stops decreasing with the current rate" # noqa: E501
@@ -137,6 +162,4 @@ class Classifier(pl.LightningModule):
         return self.base_step(batch, batch_idx, "test")
 
     def configure_optimizers(self):
-        return Adam(
-            self.parameters(), lr=self.lr, betas=(0.9, 0.999), weight_decay=0.0005
-        )  # TODO parametrize momentum and weight decay here
+        return Adam(self.parameters(), lr=self.lr, weight_decay=0.0005)
