@@ -2,14 +2,14 @@ autoencoder:
   lr: 0.01
   maxnepochs: 666 # TODO
   batch_size: 128
-  max_steps: 32
+  max_steps: 500
   num_workers: 0
 
-  
+
 classifier:
   lr: 0.01
   maxnepochs: 666 # TODO
   batch_size: 128
-  max_steps: 32
+  max_steps: 500
   torch_jit_serialization_method: 'trace'
   num_workers: 0
