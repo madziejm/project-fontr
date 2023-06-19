@@ -14,17 +14,17 @@ Team members:
 
 To run the project, follow the steps below:
 
-1. Install the required dependencies:
+Install the required dependencies:
 ```
 poetry run pip install -r src/requirements.txt
 ```
 
-1. Build the project requirements:
+Build the project requirements:
 ```
 poetry run kedro build-reqs
 ```
 
-1. Run the project:
+Run the project:
 ```
 poetry run kedro run
 ```
@@ -49,9 +49,9 @@ To use your own storage you need to change `filepath` parameters in `conf/base/c
 Weights and Biases (W&B) is a platform for tracking, visualizing, and optimizing machine learning experiments, which we use in our project.
 It is required to run the project.
 
-To use W&B logging in this project create a file named credentials_wandb.yml in the conf/local directory. It should have one attribute called api_key that stores an API Key to your W&B account.
+To use W&B logging in this project create a file named credentials_wandb.yml in the `conf/local` directory. It should have one attribute called `api_key` that stores an API Key to your W&B account.
 
-Once you have set up the credentials_wandb.yml file, you can run the project and enjoy the benefits of W&B logging. The project will automatically log relevant experiment metrics and provide visualizations through the W&B platform.
+Once you have set up the `credentials_wandb.yml` file, you can run the project and enjoy the benefits of W&B logging. The project will automatically log relevant experiment metrics and provide visualizations through the W&B platform.
 
 ## **AdobeVFR Dataset**
 
