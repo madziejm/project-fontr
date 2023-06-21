@@ -247,12 +247,7 @@ def evaluate_classifier(
 
 
 @torch.no_grad()
-def predict(
-    classifier: ScriptModule,
-    # test_dataset: KedroPytorchImageDataset,
-    label2idx: dict
-):
-    file_to_predict = "/home/mleonowicz/Documents/project-fontr/img/3.png"
+def predict(classifier: ScriptModule, file_to_predict: str, label2idx: dict):
     img = torchvision.transforms.ToTensor()(Image.open(file_to_predict).convert("RGB"))
     transforms = get_transforms()
     img = transforms(img)
@@ -264,7 +259,8 @@ def predict(
     print(torch.topk(output, 10))
     indices = torch.topk(output, 10).indices.tolist()
 
+    answer = []
     for idx in indices:
-        print(idx2label[idx])
+        answer.append(idx2label[idx])
 
-    return img
+    return answer
