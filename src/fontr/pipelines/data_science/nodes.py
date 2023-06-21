@@ -21,7 +21,7 @@ from fontr.fontr.autoencoder import Autoencoder
 from fontr.fontr.classifier import Classifier
 from fontr.fontr.logger import TorchLogger
 
-# from PIL import Image
+from PIL import Image
 
 
 def get_dataloader(dataset, batch_size, num_workers=None, shuffle=True):
@@ -250,12 +250,21 @@ def evaluate_classifier(
 def predict(
     classifier: ScriptModule,
     # test_dataset: KedroPytorchImageDataset,
-    file_to_predict: str,
-    label2idx: dict,
-    parameters: dict,
+    label2idx: dict
 ):
-    """TODO do we actually need this inference node? is this for evaluation?"""
-    raise NotImplementedError
-    # img = Image.open(file_to_predict).convert("RGB")  # resize?
-    # x = torchvision.transforms.functional.to_tensor(img).unsqueeze(0)
-    # preds = classifier(x).squeeze()
+    file_to_predict = "/home/mleonowicz/Documents/project-fontr/img/3.png"
+    img = torchvision.transforms.ToTensor()(Image.open(file_to_predict).convert("RGB"))
+    transforms = get_transforms()
+    img = transforms(img)
+
+    output = classifier.predict_step(img, 0)
+
+    idx2label = {i: l for l, i in label2idx.items()}
+
+    print(torch.topk(output, 10))
+    indices = torch.topk(output, 10).indices.tolist()
+
+    for idx in indices:
+        print(idx2label[idx])
+
+    return img

@@ -8,6 +8,7 @@ from .nodes import (  # noqa: F401 # TODO
     serialize_model_to_torch_jit,
     train_autoencoder,
     train_classifier,
+    predict,
 )
 
 
@@ -62,5 +63,14 @@ def create_pipeline(**kwargs) -> Pipeline:
             #     outputs=None,
             #     name="evaluate_classifier_node",
             # ),
+            node(
+                func=predict,
+                inputs=[
+                    "classifier",
+                    "label2idx",
+                ],
+                outputs="predict_output",
+                name="predict_node",
+            ),
         ]
     )
