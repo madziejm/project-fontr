@@ -80,29 +80,23 @@ class Classifier(pl.LightningModule):
             nn.Linear(4096, self.nclasses),
         )
 
-        self.accuracy = nn.ModuleDict(
-            {
-                "train_accuracy": Accuracy(
-                    task="multiclass", num_classes=self.nclasses
-                ),
-                "test_accuracy": Accuracy(task="multiclass", num_classes=self.nclasses),
-                "val_accuracy": Accuracy(task="multiclass", num_classes=self.nclasses),
-            }
-        )
+        self.accuracy = {
+            "train_accuracy": Accuracy(task="multiclass", num_classes=self.nclasses),
+            "test_accuracy": Accuracy(task="multiclass", num_classes=self.nclasses),
+            "val_accuracy": Accuracy(task="multiclass", num_classes=self.nclasses),
+        }
 
-        self.top_k_accuracy = nn.ModuleDict(
-            {
-                f"train_top_{self.top_k}_accuracy": Accuracy(
-                    task="multiclass", num_classes=self.nclasses, top_k=self.top_k
-                ),
-                f"test_top_{self.top_k}_accuracy": Accuracy(
-                    task="multiclass", num_classes=self.nclasses, top_k=self.top_k
-                ),
-                f"val_top_{self.top_k}_accuracy": Accuracy(
-                    task="multiclass", num_classes=self.nclasses, top_k=self.top_k
-                ),
-            }
-        )
+        self.top_k_accuracy = {
+            f"train_top_{self.top_k}_accuracy": Accuracy(
+                task="multiclass", num_classes=self.nclasses, top_k=self.top_k
+            ),
+            f"test_top_{self.top_k}_accuracy": Accuracy(
+                task="multiclass", num_classes=self.nclasses, top_k=self.top_k
+            ),
+            f"val_top_{self.top_k}_accuracy": Accuracy(
+                task="multiclass", num_classes=self.nclasses, top_k=self.top_k
+            ),
+        }
         self.save_hyperparameters()
 
     def forward(self, x):
