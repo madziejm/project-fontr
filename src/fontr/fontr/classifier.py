@@ -110,8 +110,11 @@ class Classifier(pl.LightningModule):
         x = self.classifier_suffix(x)
         return x
 
-    def predict_step(self, batch: Any, batch_idx: int, dataloader_idx: int = 0):
-        return nn.functional.softmax(self.forward(batch), dim=1)
+    def predict_step(self, x: Any, batch_idx: int, dataloader_idx: int = 0):
+        output = self.forward(x)
+        output = max(output, 0).values
+        softmax = nn.functional.softmax(output)
+        return softmax
 
     def base_step(self, batch, batch_idx: int, step_name: str):
         x, y = batch
