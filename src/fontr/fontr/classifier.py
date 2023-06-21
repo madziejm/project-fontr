@@ -122,18 +122,18 @@ class Classifier(pl.LightningModule):
         softmax = nn.functional.softmax(output, dim=1)
 
         accuracy_id = step_name + "_accuracy"
-        self.accuracy[accuracy_id].forward(softmax, y)
+        self.accuracy[accuracy_id].forward(softmax, y)  # type: ignore
         self.log(
             accuracy_id,
-            self.accuracy[accuracy_id],
+            self.accuracy[accuracy_id],  # type: ignore
             on_step=True,
             on_epoch=True,
         )
         top_k_accuracy_id = step_name + f"_top_{self.top_k}_accuracy"
-        self.top_k_accuracy[top_k_accuracy_id].forward(softmax, y)
+        self.top_k_accuracy[top_k_accuracy_id].forward(softmax, y)  # type: ignore
         self.log(
             top_k_accuracy_id,
-            self.top_k_accuracy[top_k_accuracy_id],
+            self.top_k_accuracy[top_k_accuracy_id],  # type: ignore
             on_step=True,
             on_epoch=True,
         )
